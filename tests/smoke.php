@@ -42,4 +42,14 @@ try {
     throw $e;
 }
 
+// Exemplares: entidade + repositório (status validado no domínio)
+$exemplares = new \Biblioteca\Infrastructure\ExemplarRepository($pdo);
+$copia = new \Biblioteca\Domain\Exemplar($livro->id(), 'PAT-' . uniqid());
+$exemplares->salvar($copia);
+$copia->alterarStatus('emprestado');
+$exemplares->salvar($copia);
+assert($exemplares->buscar($copia->id())->status() === 'emprestado');
+assert(count($exemplares->porLivro($livro->id())) >= 1);
+assert($exemplares->contarDisponiveis($livro->id()) === 0);
+
 echo "OK\n";
